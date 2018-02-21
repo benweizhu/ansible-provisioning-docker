@@ -1,0 +1,31 @@
+---
+- hosts: provisioning
+  remote_user: root
+  tasks:
+  - name: Uninstall old docker versions
+    command: yum remove -y docker \
+                  docker-common \
+                  docker-selinux \
+                  docker-engine
+
+  - name: Install required packages
+    command: yum install -y yum-utils \
+                  device-mapper-persistent-data \
+                  lvm2
+
+  - name: Set up repository
+    command: yum-config-manager \
+                  --add-repo \
+                  https://download.docker.com/linux/centos/docker-ce.repo
+
+  - name: Install Docker CE
+    command: yum install -y docker-ce
+
+  - name: Install docker-compose
+    command: pip install docker-compose
+  
+  - name: start docker service
+    service: name=docker state=restarted
+
+  - name: hello-world docker
+    command: docker run hello-world
